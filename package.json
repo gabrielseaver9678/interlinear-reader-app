@@ -1,0 +1,25 @@
+{
+  "name": "interlinear-reader-app",
+  "version": "1.0.0",
+  "description": "An app which creates interlinear texts",
+  "main": "main.js",
+  "author": "Gabriel Seaver",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^20.0.2"
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "lingva-scraper": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielseaver9678/interlinear-reader-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gabrielseaver9678/interlinear-reader-app/issues"
+  },
+  "homepage": "https://github.com/gabrielseaver9678/interlinear-reader-app#readme"
+}
