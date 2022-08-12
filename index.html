@@ -3,11 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        
+        <link rel="stylesheet" href="index-style.css">
+        
         <title>Interlinear Reader</title>
     </head>
     <body>
-        <textarea id="input-text">привет, меня зовут Габриэль!</textarea>
+        <textarea id="input-text">Здравствуйте! Меня зовут Маша. Мне восемнадцать лет. Я живу в России. Я из города Липецк. Липецк находится в четырехстах километрах к югу от Москвы. Но по Российским меркам это не очень большое расстояние. Я окончила школу, когда мне было 16 лет, хотя в России большинство учеников выпускаются из школы в семнадцать. Это потому, что мой день рождения приходится на первую часть учебного года. Он в декабре. Но мне всегда нравилось быть младшей ученицей в классе. Не знаю почему. В школе я начала учить английский. На сегодняшний день я изучаю английский уже более десяти лет.</textarea>
         <button id="translate-button">Translate!</button>
+        
+        <p id="interlinear-view"></p>
+        
         <script src="./renderer.js"></script>
     </body>
 </html>

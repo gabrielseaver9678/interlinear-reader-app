@@ -1,0 +1,25 @@
+#interlinear-view {
+    word-spacing: 8px;
+    line-height: 80px;
+}
+
+.wordPairElem {
+    position: relative;
+}
+
+.sourceLangWord {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.targetLangWord {
+    position: absolute;
+    top: 20px;
+    left: 0px;
+    
+    font-size: 14px;
+    font-weight: normal;
+    
+    word-spacing: normal;
+    line-height: normal;
+}
