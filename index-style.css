@@ -1,3 +1,9 @@
+#input-text {
+    width: 100%;
+    resize: vertical;
+    height: 15em;
+}
+
 #interlinear-view {
     word-spacing: 0.5em;
     line-height: 4em;
