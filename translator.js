@@ -1,7 +1,7 @@
 const { net } = require("electron")
 const lingvaScraper = require("lingva-scraper")
 
-module.exports = { translate, define }
+module.exports = { translate, translateAll }
 
 async function translate (source, target, text) {
     return lingvaScraper.getTranslationText(source, target, text)
@@ -9,7 +9,7 @@ async function translate (source, target, text) {
 
 async function translateAll (source, target, textsJSON) {
     const texts = JSON.parse(textsJSON)
-    return await texts.array.map((text) => translate(source, target, text))
+    return JSON.stringify(await Promise.all(texts.map(text => translate(source, target, text))))
 }
 
 function define () {

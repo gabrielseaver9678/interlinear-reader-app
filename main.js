@@ -23,7 +23,7 @@ app.whenReady().then(() => {
     })
     
     ipcMain.handle("translateAll", async (_, source, target, textsJSON) => {
-        return translator.translate(source, target, textsJSON)
+        return translator.translateAll(source, target, textsJSON)
     })
     
     ipcMain.on("console-log", (_, value) => {
