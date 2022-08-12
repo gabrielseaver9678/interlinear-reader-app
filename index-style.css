@@ -1,6 +1,6 @@
 #interlinear-view {
-    word-spacing: 8px;
-    line-height: 80px;
+    word-spacing: 0.5em;
+    line-height: 4em;
 }
 
 .wordPairElem {
@@ -8,18 +8,22 @@
 }
 
 .sourceLangWord {
-    font-size: 20px;
+    display: inline-block;
+    font-size: 1.4em;
     font-weight: bold;
 }
 
 .targetLangWord {
+    display: inline-block;
     position: absolute;
-    top: 20px;
-    left: 0px;
+    top: 1.4em;
+    left: 0em;
     
-    font-size: 14px;
+    font-size: 1em;
     font-weight: normal;
     
     word-spacing: normal;
     line-height: normal;
+    
+    user-select: none;
 }
