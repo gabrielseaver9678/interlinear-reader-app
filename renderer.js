@@ -3,6 +3,8 @@ const translateButton = document.getElementById("translate-button")
 translateButton.onclick = translateInput
 const interlinearView = document.getElementById("interlinear-view")
 
+const textSelectionMenu = document.getElementById("text-selection-menu")
+
 const langSourceSelect = document.getElementById("lang-source")
 function addLangOption (code, langName, selected) {
     // Add a language option to the source languages dropdown
@@ -12,6 +14,8 @@ function addLangOption (code, langName, selected) {
     if (selected) { sourceOpt.selected = "selected" }
     langSourceSelect.appendChild(sourceOpt)
 }
+
+// Add all the source language options
 addLangOption("ar", "Arabic")
 addLangOption("bn", "Bengali")
 addLangOption("fr", "French")
@@ -24,6 +28,69 @@ addLangOption("pt", "Portuguese")
 addLangOption("ru", "Russian", true)
 addLangOption("es", "Spanish")
 addLangOption("tr", "Turkish")
+
+// Whenever the user stops pressing the pointer, check if a text selection menu should be displayed
+interlinearView.onpointerup = () => {
+    const selection = window.getSelection()
+    const range = selection.getRangeAt(0), contents = range.cloneContents()
+    const text = getInterlinearViewSelectedText(selection, range, contents)
+    
+    // Check that text is selected before showing dialog box
+    if (text === "") return
+    
+    // Check that the selected text is all contained within the interlinear view
+    // If the selection both begins and ends in the interlinear view box then the selection
+    // must be entirely within the interlinear box
+    if (!(interlinearView.contains(selection.anchorNode) && interlinearView.contains(selection.focusNode))) return
+    
+    // Reposition the text selection menu
+    const sRect = range.getBoundingClientRect()
+    const mRect = textSelectionMenu.getBoundingClientRect()
+    textSelectionMenu.style.top = window.scrollY +  sRect.top - 30 + "px"
+    textSelectionMenu.style.left = window.scrollX + sRect.left + sRect.width/2 - mRect.width/2 + "px"
+    
+    // Make the text selection menu visible
+    textSelectionMenu.style.visibility = "visible"
+}
+
+function getInterlinearViewSelectedText (selection, range, contents) {
+    // Get text of the selection contents and remove English translation--
+    // despite the fact that you can't select the English translation it'll
+    // still appear in the selection.toString() so the English must be manually
+    // removed
+    let text = ""
+    
+    if (contents.childElementCount === 0) {
+        // Only the contents of one element is selected, so the text contained
+        // can be used directly
+        text = selection.toString()
+    } else {
+        // Content from several elements is selected, ensure only source lang
+        // content is considered and not target lang content
+        const numEles = contents.childElementCount
+        
+        // Loop through all child elements and add text content to text if necessary
+        for (let i = 0; i < numEles; i ++) {
+            const ele = contents.children[i]
+            console.log(ele)
+            if (ele.className === "sourceLangWhitespace") {
+                // If the element is whitespace from the source language, add its contents directly to the text field
+                text += ele.textContent
+            } else if (ele.className === "wordPairElem") {
+                // If the element is a word pair, add the first node contained (which will be
+                // the word from the original language) to the text field
+                text += ele.firstElementChild.textContent
+            }
+        }
+    }
+    
+    return text
+}
+
+// When the user clicks, stop showing the text selection menu
+document.onpointerdown = () => {
+    textSelectionMenu.style.visibility = "hidden"
+}
 
 async function translateInput () {
     // Reset the interlinear book view
@@ -38,7 +105,8 @@ async function translateInput () {
         
         // Create a space character to separate words
         const spaceChar = document.createElement("span")
-        spaceChar.textContent = " "
+        spaceChar.innerHTML = "&nbsp;"
+        spaceChar.className = "sourceLangWhitespace"
         interlinearView.appendChild(spaceChar)
     });
 }

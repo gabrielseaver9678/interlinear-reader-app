@@ -1,3 +1,15 @@
+#text-selection-menu {
+    position: absolute;
+    visibility: hidden;
+    
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    
+    padding: 0.6em;
+}
+
 #input-text {
     width: 100%;
     resize: vertical;
@@ -13,7 +25,7 @@
     position: relative;
 }
 
-.sourceLangWord {
+.sourceLangWhitespace, .sourceLangWord {
     display: inline-block;
     font-size: 1.4em;
     font-weight: bold;
