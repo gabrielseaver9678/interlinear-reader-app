@@ -4,28 +4,17 @@ translateButton.onclick = translateInput
 const interlinearView = document.getElementById("interlinear-view")
 
 const langSourceSelect = document.getElementById("lang-source")
-const langTargetSelect = document.getElementById("lang-target")
-function getLangOption (code, langName) {
+function addLangOption (code, langName, selected) {
+    // Add a language option to the source languages dropdown
     const sourceOpt = document.createElement("option")
     sourceOpt.text = langName
     sourceOpt.value = code
-    return sourceOpt
-}
-function addLangOption (code, langName, selected) {
-    const langSourceOpt = getLangOption(code, langName)
-    const langTargetOpt = getLangOption(code, langName)
-    if (selected) {
-        console.log(`Lang selected: ${code}`)
-        langSourceOpt.selected = "selected"
-        langTargetOpt.selected = "selected"
-    }
-    langSourceSelect.appendChild(langSourceOpt)
-    langTargetSelect.appendChild(langTargetOpt)
+    if (selected) { sourceOpt.selected = "selected" }
+    langSourceSelect.appendChild(sourceOpt)
 }
 addLangOption("zh", "Chinese")
-addLangOption("en", "English", true)
 addLangOption("ko", "Korean")
-addLangOption("ru", "Russian")
+addLangOption("ru", "Russian", true)
 addLangOption("es", "Spanish")
 
 async function translateInput () {
@@ -33,7 +22,7 @@ async function translateInput () {
     interlinearView.innerHTML = ""
     
     // Generate translated words and pair them
-    const wordPairs = await getTranslatedWordPairs(langSourceSelect.value, langTargetSelect.value, inputText.value.toString())
+    const wordPairs = await getTranslatedWordPairs(langSourceSelect.value, "en", inputText.value.toString())
     
     wordPairs.forEach(wordPair => {
         // For each pair of original words and translated words, create the html element to represent both
