@@ -12,10 +12,18 @@ function addLangOption (code, langName, selected) {
     if (selected) { sourceOpt.selected = "selected" }
     langSourceSelect.appendChild(sourceOpt)
 }
-addLangOption("zh", "Chinese")
+addLangOption("ar", "Arabic")
+addLangOption("bn", "Bengali")
+addLangOption("fr", "French")
+addLangOption("de", "German")
+addLangOption("hi", "Hindi")
+addLangOption("it", "Italian")
+addLangOption("ja", "Japanese")
 addLangOption("ko", "Korean")
+addLangOption("pt", "Portuguese")
 addLangOption("ru", "Russian", true)
 addLangOption("es", "Spanish")
+addLangOption("tr", "Turkish")
 
 async function translateInput () {
     // Reset the interlinear book view
