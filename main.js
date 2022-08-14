@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow } = require("electron")
+const { app, shell, ipcMain, BrowserWindow } = require("electron")
 const path = require("path")
 const translator = require("./translator")
 
@@ -28,6 +28,10 @@ app.whenReady().then(() => {
     
     ipcMain.on("console-log", (_, value) => {
         console.log(value)
+    })
+    
+    ipcMain.on("open-link", (_, url) => {
+        shell.openExternal(url)
     })
     
     createWindow()

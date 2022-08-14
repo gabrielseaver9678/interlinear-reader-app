@@ -4,6 +4,8 @@ translateButton.onclick = translateInput
 const interlinearView = document.getElementById("interlinear-view")
 
 const textSelectionMenu = document.getElementById("text-selection-menu")
+const translateSelectedText = document.getElementById("translate-selected-text")
+const defineSelectedText = document.getElementById("define-selected-text")
 
 const langSourceSelect = document.getElementById("lang-source")
 function addLangOption (code, langName, selected) {
@@ -33,7 +35,7 @@ addLangOption("tr", "Turkish")
 interlinearView.onpointerup = () => {
     const selection = window.getSelection()
     const range = selection.getRangeAt(0), contents = range.cloneContents()
-    const text = getInterlinearViewSelectedText(selection, range, contents)
+    const text = getInterlinearViewSelectedText()
     
     // Check that text is selected before showing dialog box
     if (text === "") return
@@ -53,7 +55,10 @@ interlinearView.onpointerup = () => {
     textSelectionMenu.style.visibility = "visible"
 }
 
-function getInterlinearViewSelectedText (selection, range, contents) {
+function getInterlinearViewSelectedText () {
+    const selection = window.getSelection()
+    const contents = selection.getRangeAt(0).cloneContents()
+    
     // Get text of the selection contents and remove English translation--
     // despite the fact that you can't select the English translation it'll
     // still appear in the selection.toString() so the English must be manually
@@ -72,7 +77,6 @@ function getInterlinearViewSelectedText (selection, range, contents) {
         // Loop through all child elements and add text content to text if necessary
         for (let i = 0; i < numEles; i ++) {
             const ele = contents.children[i]
-            console.log(ele)
             if (ele.className === "sourceLangWhitespace") {
                 // If the element is whitespace from the source language, add its contents directly to the text field
                 text += ele.textContent
@@ -88,8 +92,19 @@ function getInterlinearViewSelectedText (selection, range, contents) {
 }
 
 // When the user clicks, stop showing the text selection menu
-document.onpointerdown = () => {
-    textSelectionMenu.style.visibility = "hidden"
+document.onpointerdown = (event) => {
+    // Don't make the text selection menu disappear if the user clicked it; only if the user clicked elsewhere
+    if (!textSelectionMenu.contains(event.target)) textSelectionMenu.style.visibility = "hidden"
+}
+
+translateSelectedText.onclick = async () => {
+    const text = getInterlinearViewSelectedText()
+    alert(await electronAPI.translate(langSourceSelect.value, "en", text))
+}
+
+defineSelectedText.onclick = () => {
+    const text = getInterlinearViewSelectedText()
+    electronAPI.openLink(`https://en.wiktionary.org/wiki/${text.toLowerCase()}#${langSourceSelect.options[langSourceSelect.selectedIndex].text}`)
 }
 
 async function translateInput () {

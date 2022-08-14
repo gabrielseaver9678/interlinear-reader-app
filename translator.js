@@ -12,10 +12,6 @@ async function translateAll (source, target, textsJSON) {
     return JSON.stringify(await Promise.all(texts.map(text => translate(source, target, text))))
 }
 
-function define () {
-    
-}
-
 async function postReq (hostname, path, bodyObj) {
     return new Promise((resolve, reject) => {
         const body = JSON.stringify(bodyObj)
