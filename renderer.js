@@ -1,7 +1,11 @@
+const inputBox = document.getElementById("input-box")
 const inputText = document.getElementById("input-text")
+
 const translateButton = document.getElementById("translate-button")
 translateButton.onclick = translateInput
+
 const interlinearView = document.getElementById("interlinear-view")
+const returnToInputButton = document.getElementById("return-to-input")
 
 const textSelectionMenu = document.getElementById("text-selection-menu")
 const translateSelectedText = document.getElementById("translate-selected-text")
@@ -31,10 +35,15 @@ addLangOption("ru", "Russian", true)
 addLangOption("es", "Spanish")
 addLangOption("tr", "Turkish")
 
+returnToInputButton.onclick = () => {
+    interlinearView.innerHTML = ""
+    inputBox.style.visibility = "visible"
+}
+
 // Whenever the user stops pressing the pointer, check if a text selection menu should be displayed
 interlinearView.onpointerup = () => {
     const selection = window.getSelection()
-    const range = selection.getRangeAt(0), contents = range.cloneContents()
+    const range = selection.getRangeAt(0)
     const text = getInterlinearViewSelectedText()
     
     // Check that text is selected before showing dialog box
@@ -48,8 +57,8 @@ interlinearView.onpointerup = () => {
     // Reposition the text selection menu
     const sRect = range.getBoundingClientRect()
     const mRect = textSelectionMenu.getBoundingClientRect()
-    textSelectionMenu.style.top = window.scrollY +  sRect.top - 30 + "px"
-    textSelectionMenu.style.left = window.scrollX + sRect.left + sRect.width/2 - mRect.width/2 + "px"
+    textSelectionMenu.style.top = window.scrollY + sRect.bottom + "px"
+    textSelectionMenu.style.left = window.scrollX + sRect.left + "px"
     
     // Make the text selection menu visible
     textSelectionMenu.style.visibility = "visible"
@@ -108,8 +117,8 @@ defineSelectedText.onclick = () => {
 }
 
 async function translateInput () {
-    // Reset the interlinear book view
-    interlinearView.innerHTML = ""
+    // Make the input box invisible
+    inputBox.style.visibility = "hidden"
     
     // Generate translated words and pair them
     const wordPairs = await getTranslatedWordPairs(langSourceSelect.value, "en", inputText.value.toString())
