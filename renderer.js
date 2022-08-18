@@ -86,10 +86,10 @@ function getInterlinearViewSelectedText () {
         // Loop through all child elements and add text content to text if necessary
         for (let i = 0; i < numEles; i ++) {
             const ele = contents.children[i]
-            if (ele.className === "sourceLangWhitespace") {
+            if (ele.className === "source-lang-whitespace") {
                 // If the element is whitespace from the source language, add its contents directly to the text field
                 text += ele.textContent
-            } else if (ele.className === "wordPairElem") {
+            } else if (ele.className === "word-pair-elem") {
                 // If the element is a word pair, add the first node contained (which will be
                 // the word from the original language) to the text field
                 text += ele.firstElementChild.textContent
@@ -135,21 +135,21 @@ async function translateInput () {
 
 function makeWhitespaceElem (whitespace) {
     const elem = document.createElement("span")
-    const innerHTML = whitespace.content.replace(/\n/g, "<br class='sourceLangWhitespace' />")
+    const innerHTML = whitespace.content.replace(/\n/g, "<br class='source-lang-whitespace' />")
     elem.innerHTML = innerHTML
-    elem.className = "sourceLangWhitespace"
+    elem.className = "source-lang-whitespace"
     interlinearView.appendChild(elem)
 }
 
 function makeWordPairElem (wordPair) {
     // Create the span which holds both the source word (original) and target word (translated)
     const wordPairElem = document.createElement("span")
-    wordPairElem.className = "wordPairElem"
+    wordPairElem.className = "word-pair-elem"
     
     // Create the source word
     const sourceWordElem = document.createElement("span")
     sourceWordElem.textContent = wordPair.content.original
-    sourceWordElem.className = "sourceLangWord"
+    sourceWordElem.className = "source-lang-word"
     
     // Create the target word
     const targetWordElem = document.createElement("span")

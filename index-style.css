@@ -100,11 +100,11 @@ button:active {
     color: var(--main-color)
 }
 
-.wordPairElem {
+.word-pair-elem {
     position: relative;
 }
 
-.sourceLangWhitespace, .sourceLangWord {
+.source-lang-whitespace, .source-lang-word {
     font-family: var(--reader-font);
     font-size: 1.4em;
     font-weight: bold;
@@ -116,7 +116,7 @@ button:active {
     text-decoration-skip-ink: none;
 }
 
-.sourceLangWhitespace::selection, .sourceLangWord::selection {
+.source-lang-whitespace::selection, .source-lang-word::selection {
     text-decoration-color: var(--highlight-color);
     text-decoration-skip: none;
     text-decoration-skip-ink: none;
