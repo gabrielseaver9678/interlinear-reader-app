@@ -97,7 +97,8 @@ button:active {
 
 #interlinear-view {
     line-height: 4em;
-    color: var(--main-color)
+    color: var(--main-color);
+    padding: 30px;
 }
 
 .word-pair-elem {
