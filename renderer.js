@@ -121,18 +121,24 @@ async function translateInput () {
     inputBox.style.visibility = "hidden"
     
     // Generate translated words and pair them
-    const wordPairs = await getTranslatedWordPairs(langSourceSelect.value, "en", inputText.value.toString())
+    const textParts = await getTranslatedTextParts(langSourceSelect.value, "en", inputText.value.toString())
     
-    wordPairs.forEach(wordPair => {
-        // For each pair of original words and translated words, create the html element to represent both
-        makeWordPairElem(wordPair)
-        
-        // Create a space character to separate words
-        const spaceChar = document.createElement("span")
-        spaceChar.innerHTML = "&nbsp;"
-        spaceChar.className = "sourceLangWhitespace"
-        interlinearView.appendChild(spaceChar)
+    textParts.forEach(textPart => {
+        // For part of the text (whitespace or word), add the text to the interlinear view
+        if (textPart.type === "word") {
+            makeWordPairElem(textPart)
+        } else if (textPart.type === "whitespace") {
+            makeWhitespaceElem(textPart)
+        }
     });
+}
+
+function makeWhitespaceElem (whitespace) {
+    const elem = document.createElement("span")
+    const innerHTML = whitespace.content.replace(/\n/g, "<br class='sourceLangWhitespace' />")
+    elem.innerHTML = innerHTML
+    elem.className = "sourceLangWhitespace"
+    interlinearView.appendChild(elem)
 }
 
 function makeWordPairElem (wordPair) {
@@ -142,12 +148,12 @@ function makeWordPairElem (wordPair) {
     
     // Create the source word
     const sourceWordElem = document.createElement("span")
-    sourceWordElem.textContent = wordPair[0]
+    sourceWordElem.textContent = wordPair.content.original
     sourceWordElem.className = "sourceLangWord"
     
     // Create the target word
     const targetWordElem = document.createElement("span")
-    targetWordElem.textContent = wordPair[1]
+    targetWordElem.textContent = wordPair.content.translated
     targetWordElem.className = "targetLangWord"
     
     // Append the source and target words to the word pair
@@ -171,18 +177,58 @@ function makeWordPairElem (wordPair) {
     }
 }
 
-function getWords (text) {
-    // Split apart text into words separated by whitespace
-    return text.split(RegExp("[\\s]+"))
+function splitText (text) {
+    let parts = []
+    const whitespaceExp = /^[\s]+/
+    const wordExp = /^[^\s]+/
+    
+    while (text.length > 0) {
+        if (whitespaceExp.test(text)) {
+            // The remaining part of the text begins with whitespace
+            const whitespace = whitespaceExp.exec(text)[0]          // Get the whitespace
+            parts.push({ type:"whitespace", content: whitespace })  // Add the whitespace to the parts list
+            text = text.substring(whitespace.length)                // Remove the whitespace from the beginning of the string
+        } else {
+            // The remaining part of the text begins with a word
+            const word = wordExp.exec(text)[0]                      // Get the wor
+            parts.push({ type:"word", content: word })              // Add the word to the parts list
+            text = text.substring(word.length)                      // Remove the word from the beginning of the string
+        }
+    }
+    
+    return parts
 }
 
-async function getTranslatedWordPairs (source, target, text) {
-    // Get all words from a text
-    const words = getWords(text)
+async function getTranslatedTextParts (source, target, text) {
+    // Get all parts from a text (words + whitespace)
+    let textParts = splitText(text)
+    
+    // Get a list of words from the parts list
+    let words = []
+    textParts.forEach(part => {
+        if (part.type === "word") words.push(part.content)
+    })
     
     // Translate all words
     const translatedWords = await electronAPI.translateAll(source, target, words)
     
-    // Return a pairing of all original source words with the translated target words
-    return words.map((word, i) => [word, translatedWords[i]])
+    // Update the text parts list to include the translated words
+    let wordIndex = 0;
+    for (let partIndex = 0; partIndex < textParts.length; partIndex ++) {
+        // No need to update if the text part isn't a word
+        if (textParts[partIndex].type !== "word") continue
+        
+        // If the text part is a word, then get the translated word
+        const translatedWord = translatedWords[wordIndex]
+        const ogWord = words[wordIndex]
+        
+        // Then add the translated word to the text parts list
+        textParts[partIndex].content = { original: ogWord, translated: translatedWord }
+        
+        // Update the word index for the next translated word
+        wordIndex ++
+    }
+    
+    // Return the updated list of text parts
+    return textParts
 }

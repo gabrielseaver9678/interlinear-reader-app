@@ -96,7 +96,6 @@ button:active {
 }
 
 #interlinear-view {
-    word-spacing: 0.5em;
     line-height: 4em;
     color: var(--main-color)
 }
@@ -106,11 +105,11 @@ button:active {
 }
 
 .sourceLangWhitespace, .sourceLangWord {
-    display: inline-block;
-    
     font-family: var(--reader-font);
     font-size: 1.4em;
     font-weight: bold;
+    
+    word-spacing: 0.5em;
     
     text-decoration: solid underline transparent 4px;
     text-decoration-skip: none;
