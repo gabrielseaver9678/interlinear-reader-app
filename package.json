@@ -2,7 +2,7 @@
   "name": "interlinear-reader-app",
   "version": "1.0.0",
   "description": "An app which creates interlinear texts",
-  "main": "main.js",
+  "main": "electron-scripts/main.js",
   "author": "Gabriel Seaver",
   "license": "ISC",
   "devDependencies": {

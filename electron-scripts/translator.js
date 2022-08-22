@@ -3,7 +3,7 @@ const lingvaScraper = require("lingva-scraper")
 
 module.exports = { translate, translateWithFormat }
 
-const translationOverride = JSON.parse(fs.readFileSync("translation-override.json"))
+const translationOverride = JSON.parse(fs.readFileSync("./translation-override.json"))
 
 function getTranslationOverride (source, target, text) {
     // Check if the translation override has an entry for the source language
