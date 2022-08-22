@@ -26,6 +26,10 @@ app.whenReady().then(() => {
         return translator.translateAll(source, target, textsJSON)
     })
     
+    ipcMain.handle("translateWithFormat", async (_, source, target, textJSON) => {
+        return translator.translateWithFormat(source, target, textJSON)
+    })
+    
     ipcMain.on("console-log", (_, value) => {
         console.log(value)
     })
