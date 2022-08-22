@@ -1,10 +1,39 @@
-const { net } = require("electron")
+const fs = require("fs")
 const lingvaScraper = require("lingva-scraper")
 
 module.exports = { translate, translateWithFormat }
 
+const translationOverride = JSON.parse(fs.readFileSync("translation-override.json"))
+
+function getTranslationOverride (source, target, text) {
+    // Check if the translation override has an entry for the source language
+    if (translationOverride[source]) {
+        
+        // Check for entry in target language under source language
+        if (translationOverride[source][target]) {
+            
+            // Loop through all entries in the translation override
+            for (let i = 0; i < translationOverride[source][target].length; i ++) {
+                
+                // If an entry with the given input text is found, return the overridden output text
+                if (translationOverride[source][target][i][0] === text) return translationOverride[source][target][i][1]
+            }
+        }
+    }
+    
+    // If any of the above failed, return false to indicate there was no override
+    return false
+}
+
 async function translate (source, target, text) {
-    return lingvaScraper.getTranslationText(source, target, text)
+    // Check for a translation override
+    const translationOverride = getTranslationOverride(source, target, text)
+    
+    // If there was no override, perform the translation and return its output
+    if (translationOverride === false) return lingvaScraper.getTranslationText(source, target, text)
+    
+    // Otherwise, there was an override, and return the overridden output
+    return Promise.resolve(translationOverride)
 }
 
 async function translateWithFormat (source, target, textJSON) {
