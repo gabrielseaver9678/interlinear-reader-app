@@ -22,10 +22,6 @@ app.whenReady().then(() => {
         return translator.translate(source, target, text)
     })
     
-    ipcMain.handle("translateAll", async (_, source, target, textsJSON) => {
-        return translator.translateAll(source, target, textsJSON)
-    })
-    
     ipcMain.handle("translateWithFormat", async (_, source, target, textJSON) => {
         return translator.translateWithFormat(source, target, textJSON)
     })

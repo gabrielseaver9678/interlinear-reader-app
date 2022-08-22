@@ -120,40 +120,47 @@ async function translateInput () {
     // Make the input box invisible
     inputBox.style.visibility = "hidden"
     
-    // Generate translated words and pair them
-    const textParts = await getTranslatedTextParts(langSourceSelect.value, "en", inputText.value.toString())
+    // Turn the plaintext input into formatted text so it can be translated
+    let textObj = formatPlainTextStr(inputText.value.toString())
     
-    textParts.forEach(textPart => {
-        // For part of the text (whitespace or word), add the text to the interlinear view
-        if (textPart.type === "word") {
-            makeWordPairElem(textPart)
-        } else if (textPart.type === "whitespace") {
-            makeWhitespaceElem(textPart)
+    // Then translate the formatted text object
+    textObj = await electronAPI.translateWithFormat(langSourceSelect.value, "en", textObj)
+    
+    // Loop through all sections in the text object
+    textObj.sections.forEach(section => {
+        for (let i = 0; i < section.original.length; i ++) {
+            
+            // For each part of the text (whitespace or word) add it to the interlinear view
+            if (!section.isWhitespace[i]) {
+                makeWordPairElem(section.original[i], section.translated[i]) // Word
+            } else {
+                makeWhitespaceElem(section.original[i]) // Whitespace
+            }
         }
-    });
+    })
 }
 
 function makeWhitespaceElem (whitespace) {
     const elem = document.createElement("span")
-    const innerHTML = whitespace.content.replace(/\n/g, "<br class='source-lang-whitespace' />")
+    const innerHTML = whitespace.replace(/\n/g, "<br class='source-lang-whitespace' />")
     elem.innerHTML = innerHTML
     elem.className = "source-lang-whitespace"
     interlinearView.appendChild(elem)
 }
 
-function makeWordPairElem (wordPair) {
+function makeWordPairElem (original, translated) {
     // Create the span which holds both the source word (original) and target word (translated)
     const wordPairElem = document.createElement("span")
     wordPairElem.className = "word-pair-elem"
     
     // Create the source word
     const sourceWordElem = document.createElement("span")
-    sourceWordElem.textContent = wordPair.content.original
+    sourceWordElem.textContent = original
     sourceWordElem.className = "source-lang-word"
     
     // Create the target word
     const targetWordElem = document.createElement("span")
-    targetWordElem.textContent = wordPair.content.translated
+    targetWordElem.textContent = translated
     targetWordElem.className = "targetLangWord"
     
     // Append the source and target words to the word pair
@@ -177,58 +184,27 @@ function makeWordPairElem (wordPair) {
     }
 }
 
-function splitText (text) {
-    let parts = []
+function formatPlainTextStr (textStr) {
+    let text = []
+    let isWhitespace = []
     const whitespaceExp = /^[\s]+/
     const wordExp = /^[^\s]+/
     
-    while (text.length > 0) {
-        if (whitespaceExp.test(text)) {
+    while (textStr.length > 0) {
+        if (whitespaceExp.test(textStr)) {
             // The remaining part of the text begins with whitespace
-            const whitespace = whitespaceExp.exec(text)[0]          // Get the whitespace
-            parts.push({ type:"whitespace", content: whitespace })  // Add the whitespace to the parts list
-            text = text.substring(whitespace.length)                // Remove the whitespace from the beginning of the string
+            const whitespace = whitespaceExp.exec(textStr)[0]       // Get the whitespace
+            isWhitespace.push(true)                                 // Record that this word is actually whitespace
+            text.push(whitespace)                                   // Add the whitespace to the text list
+            textStr = textStr.substring(whitespace.length)          // Remove the whitespace from the beginning of the string
         } else {
             // The remaining part of the text begins with a word
-            const word = wordExp.exec(text)[0]                      // Get the wor
-            parts.push({ type:"word", content: word })              // Add the word to the parts list
-            text = text.substring(word.length)                      // Remove the word from the beginning of the string
+            const word = wordExp.exec(textStr)[0]                   // Get the word
+            isWhitespace.push(false)                                // Record that this word is not whitespace
+            text.push(word)                                         // Add the word to the text list
+            textStr = textStr.substring(word.length)                // Remove the word from the beginning of the string
         }
     }
     
-    return parts
-}
-
-async function getTranslatedTextParts (source, target, text) {
-    // Get all parts from a text (words + whitespace)
-    let textParts = splitText(text)
-    
-    // Get a list of words from the parts list
-    let words = []
-    textParts.forEach(part => {
-        if (part.type === "word") words.push(part.content)
-    })
-    
-    // Translate all words
-    const translatedWords = await electronAPI.translateAll(source, target, words)
-    
-    // Update the text parts list to include the translated words
-    let wordIndex = 0;
-    for (let partIndex = 0; partIndex < textParts.length; partIndex ++) {
-        // No need to update if the text part isn't a word
-        if (textParts[partIndex].type !== "word") continue
-        
-        // If the text part is a word, then get the translated word
-        const translatedWord = translatedWords[wordIndex]
-        const ogWord = words[wordIndex]
-        
-        // Then add the translated word to the text parts list
-        textParts[partIndex].content = { original: ogWord, translated: translatedWord }
-        
-        // Update the word index for the next translated word
-        wordIndex ++
-    }
-    
-    // Return the updated list of text parts
-    return textParts
+    return { "sections" : [{ "original" : text, "isWhitespace" : isWhitespace }] }
 }

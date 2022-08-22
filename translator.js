@@ -1,15 +1,10 @@
 const { net } = require("electron")
 const lingvaScraper = require("lingva-scraper")
 
-module.exports = { translate, translateAll, translateWithFormat }
+module.exports = { translate, translateWithFormat }
 
 async function translate (source, target, text) {
     return lingvaScraper.getTranslationText(source, target, text)
-}
-
-async function translateAll (source, target, textsJSON) {
-    const texts = JSON.parse(textsJSON)
-    return JSON.stringify(await Promise.all(texts.map(text => translate(source, target, text))))
 }
 
 async function translateWithFormat (source, target, textJSON) {
