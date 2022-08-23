@@ -57,7 +57,7 @@ button:active {
     color: var(--main-color);
 }
 
-#input-box {
+.view {
     position: fixed;
     top: 0px;
     left: 0px;
@@ -66,7 +66,14 @@ button:active {
     
     padding: 0px;
     
-    visibility: visible;
+    visibility: hidden;
+}
+
+#input-view {
+    --padding: 25px;
+    padding: var(--padding);
+    width: calc(100% - 2 * var(--padding));
+    height: calc(100% - 2 * var(--padding));
 }
 
 #input-text {
@@ -96,9 +103,19 @@ button:active {
 }
 
 #interlinear-view {
+    --padding: 50px;
+    padding: var(--padding);
+    width: calc(100% - 2 * var(--padding));
+    height: calc(100% - 2 * var(--padding));
+    
+    overflow-y: scroll;
+}
+
+#interlinear-view-para {
     line-height: 4em;
     color: var(--main-color);
-    padding: 30px;
+    margin: 0px;
+    margin-bottom: 40px;
 }
 
 .word-pair-elem {
