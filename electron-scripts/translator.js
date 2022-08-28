@@ -3,20 +3,23 @@ const lingvaScraper = require("lingva-scraper")
 
 module.exports = { translate, translateWithFormat }
 
-const translationOverride = JSON.parse(fs.readFileSync("./translation-override.json"))
+const translationConfig = JSON.parse(fs.readFileSync("./translation-config/config.json"))
+translationConfig["languages"].forEach(lang => {
+    translationConfig[lang] = JSON.parse(fs.readFileSync(`./translation-config/${lang}.json`))
+})
 
 function getTranslationOverride (source, target, text) {
     // Check if the translation override has an entry for the source language
-    if (translationOverride[source]) {
+    if (translationConfig[source]) {
         
         // Check for entry in target language under source language
-        if (translationOverride[source][target]) {
+        if (translationConfig[source]["override"][target]) {
             
             // Loop through all entries in the translation override
-            for (let i = 0; i < translationOverride[source][target].length; i ++) {
+            for (let i = 0; i < translationConfig[source]["override"][target].length; i ++) {
                 
                 // If an entry with the given input text is found, return the overridden output text
-                if (translationOverride[source][target][i][0] === text) return translationOverride[source][target][i][1]
+                if (translationConfig[source]["override"][target][i][0] === text) return translationConfig[source]["override"][target][i][1]
             }
         }
     }
