@@ -12,6 +12,9 @@ function getTranslationOverride (source, target, text) {
     // Check if the translation override has an entry for the source language
     if (translationConfig[source]) {
         
+        const lowercaseBeforeOverride = translationConfig[source]["override"]["lowercase-before-override"]
+        if (lowercaseBeforeOverride) text = text.toLowerCase()
+        
         // Check for entry in target language under source language
         if (translationConfig[source]["override"][target]) {
             

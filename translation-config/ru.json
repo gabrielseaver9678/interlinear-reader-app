@@ -1,5 +1,7 @@
 {
     "override" : {
+        "lowercase-before-override" : true,
+        
         "en" : [
             ["а", "and"],
             ["собираемся", "are going"]
