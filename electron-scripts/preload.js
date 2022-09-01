@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
         return ipcRenderer.invoke("translate", source, target, text)
     },
     
-    translateWithFormat: async (source, target, textObj) => {
-        return JSON.parse(await ipcRenderer.invoke("translateWithFormat", source, target, JSON.stringify(textObj)))
+    translateAndFormat: async (source, target, text) => {
+        return JSON.parse(await ipcRenderer.invoke("translateAndFormat", source, target, text))
     },
     
     openLink: (url) => {

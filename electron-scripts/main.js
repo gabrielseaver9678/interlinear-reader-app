@@ -22,8 +22,8 @@ app.whenReady().then(() => {
         return translator.translate(source, target, text)
     })
     
-    ipcMain.handle("translateWithFormat", async (_, source, target, textJSON) => {
-        return translator.translateWithFormat(source, target, textJSON)
+    ipcMain.handle("translateAndFormat", async (_, source, target, text) => {
+        return translator.translateAndFormat(source, target, text)
     })
     
     ipcMain.on("console-log", (_, value) => {

@@ -130,19 +130,18 @@
         }
     }
     
-    PageViewController.addPageView("interlinear-view", new PageView("interlinear-view", (translationData) => {
-        // Loop through all sections in the text object
-        translationData.sections.forEach(section => {
-            for (let i = 0; i < section.original.length; i ++) {
-                
-                // For each part of the text (whitespace or word) add it to the interlinear view
-                if (!section.isWhitespace[i]) {
-                    makeWordPairElem(section.original[i], section.translated[i]) // Word
-                } else {
-                    makeWhitespaceElem(section.original[i]) // Whitespace
-                }
+    PageViewController.addPageView("interlinear-view", new PageView("interlinear-view", (translatedText) => {
+        
+        // Loop through all words
+        for (let i = 0; i < translatedText.original.length; i ++) {
+            
+            // For each part of the text (whitespace or word) add it to the interlinear view
+            if (!translatedText.isWhitespace[i]) {
+                makeWordPairElem(translatedText.original[i], translatedText.translated[i]) // Word
+            } else {
+                makeWhitespaceElem(translatedText.original[i]) // Whitespace
             }
-        })
+        }
     }, () => {
         interlinearViewPara.innerHTML = ""
     }))

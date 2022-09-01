@@ -1,7 +1,7 @@
 const fs = require("fs")
 const lingvaScraper = require("lingva-scraper")
 
-module.exports = { translate, translateWithFormat }
+module.exports = { translate, translateAndFormat }
 
 const translationConfig = JSON.parse(fs.readFileSync("./translation-config/config.json"))
 translationConfig["languages"].forEach(lang => {
@@ -42,34 +42,55 @@ async function translate (source, target, text) {
     return Promise.resolve(translationOverride)
 }
 
-async function translateWithFormat (source, target, textJSON) {
+async function translateAndFormat (source, target, text) {
     // Gets JSON representing the original text
-    let text = JSON.parse(textJSON)
+    let textJSON = formatTextStr(text)
     
-    // Loop through all sections of the text, translating each one independently
-    for (let sectI = 0; sectI < text.sections.length; sectI ++) {
-        // Create a new list for the translated words
-        let translatedWords = []
+    // Create a new list for the translated words
+    let translatedWords = []
+    
+    // Loop through words in section to translate them
+    for (let wordI = 0; wordI < textJSON.original.length; wordI ++) {
         
-        // Loop through words in section to translate them
-        for (let wordI = 0; wordI < text.sections[sectI].original.length; wordI ++) {
+        if (textJSON.isWhitespace[wordI] == false) {
             
+            // If the word is not whitespace, begin translating it and add the translation to the translatedWords list
+            translatedWords.push(translate(source, target, textJSON.original[wordI]))
+        } else {
             
-            if (text.sections[sectI].isWhitespace[wordI] == false) {
-                
-                // If the word is not whitespace, begin translating it and add the translation to the translatedWords list
-                translatedWords.push(translate(source, target, text.sections[sectI].original[wordI]))
-            } else {
-                
-                // If the word is whitespace, preserve it when adding it to the translatedWords list
-                translatedWords.push(Promise.resolve(text.sections[sectI].original[wordI]))
-            }
+            // If the word is whitespace, preserve it when adding it to the translatedWords list
+            translatedWords.push(Promise.resolve(textJSON.original[wordI]))
         }
-        
-        // Once all words have begun translating, wait for them to finish and then append the list to the original object
-        text.sections[sectI].translated = await Promise.all(translatedWords)
     }
     
+    // Once all words have begun translating, wait for them to finish and then append the list to the original object
+    textJSON.translated = await Promise.all(translatedWords)
+    
     // Once all sections are translated, return the object (converted back to a string)
-    return JSON.stringify(text)
+    return JSON.stringify(textJSON)
+}
+
+function formatTextStr (textStr) {
+    let text = []
+    let isWhitespace = []
+    const whitespaceExp = /^[\s]+/
+    const wordExp = /^[^\s]+/
+    
+    while (textStr.length > 0) {
+        if (whitespaceExp.test(textStr)) {
+            // The remaining part of the text begins with whitespace
+            const whitespace = whitespaceExp.exec(textStr)[0]       // Get the whitespace
+            isWhitespace.push(true)                                 // Record that this word is actually whitespace
+            text.push(whitespace)                                   // Add the whitespace to the text list
+            textStr = textStr.substring(whitespace.length)          // Remove the whitespace from the beginning of the string
+        } else {
+            // The remaining part of the text begins with a word
+            const word = wordExp.exec(textStr)[0]                   // Get the word
+            isWhitespace.push(false)                                // Record that this word is not whitespace
+            text.push(word)                                         // Add the word to the text list
+            textStr = textStr.substring(word.length)                // Remove the word from the beginning of the string
+        }
+    }
+    
+    return { "original" : text, "isWhitespace" : isWhitespace }
 }
