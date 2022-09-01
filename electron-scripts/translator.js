@@ -44,7 +44,7 @@ async function translate (source, target, text) {
 
 async function translateAndFormat (source, target, text) {
     // Gets JSON representing the original text
-    let textJSON = formatTextStr(text)
+    let textJSON = formatTextStr(source, text)
     
     // Create a new list for the translated words
     let translatedWords = []
@@ -70,7 +70,7 @@ async function translateAndFormat (source, target, text) {
     return JSON.stringify(textJSON)
 }
 
-function formatTextStr (textStr) {
+function formatTextStr (source, textStr) {
     let text = []
     let isWhitespace = []
     const whitespaceExp = /^[\s]+/
@@ -92,5 +92,5 @@ function formatTextStr (textStr) {
         }
     }
     
-    return { "original" : text, "isWhitespace" : isWhitespace }
+    return { "source" : source, "original" : text, "isWhitespace" : isWhitespace }
 }

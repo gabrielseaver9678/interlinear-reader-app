@@ -15,18 +15,10 @@
     }
 
     // Add all the source language options
-    addLangOption("ar", "Arabic")
-    addLangOption("bn", "Bengali")
-    addLangOption("fr", "French")
-    addLangOption("de", "German")
-    addLangOption("hi", "Hindi")
-    addLangOption("it", "Italian")
-    addLangOption("ja", "Japanese")
-    addLangOption("ko", "Korean")
-    addLangOption("pt", "Portuguese")
-    addLangOption("ru", "Russian", true)
-    addLangOption("es", "Spanish")
-    addLangOption("tr", "Turkish")
+    for (let code of Object.keys(appConstants.langCodes)) {
+        // Adds all language codes as options, setting russian as the default
+        addLangOption(code, appConstants.langCodes[code], code == "ru")
+    }
 
     async function translateInput () {
         // Translate the text

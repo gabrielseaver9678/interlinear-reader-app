@@ -1,3 +1,22 @@
+const appConstants = {
+    
+    langCodes : {
+        "ar" : "Arabic",
+        "bn" : "Bengali",
+        "fr" : "French",
+        "de" : "German",
+        "hi" : "Hindi",
+        "it" : "Italian",
+        "ja" : "Japanese",
+        "ko" : "Korean",
+        "pt" : "Portuguese",
+        "ru" : "Russian",
+        "es" : "Spanish",
+        "tr" : "Turkish",
+    }
+    
+}
+
 class PageView {
     #elemId
     #onLoad

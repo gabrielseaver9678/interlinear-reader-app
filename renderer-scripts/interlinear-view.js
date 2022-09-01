@@ -1,15 +1,17 @@
 (() => {
+    let langSource = ""
+    
     const interlinearViewPara = document.getElementById("interlinear-view-para")
     const returnToInputButton = document.getElementById("return-to-input")
-
+    
     const textSelectionMenu = document.getElementById("text-selection-menu")
     const translateSelectedText = document.getElementById("translate-selected-text")
     const defineSelectedText = document.getElementById("define-selected-text")
-
+    
     returnToInputButton.onclick = () => {
         PageViewController.switchToView("input-view", {})
     }
-
+    
     // Whenever the user stops pressing the pointer, check if a text selection menu should be displayed
     interlinearViewPara.onpointerup = () => {
         const selection = window.getSelection()
@@ -33,7 +35,7 @@
         // Make the text selection menu visible
         textSelectionMenu.style.visibility = "visible"
     }
-
+    
     function getInterlinearViewSelectedText () {
         const selection = window.getSelection()
         const contents = selection.getRangeAt(0).cloneContents()
@@ -69,23 +71,23 @@
         
         return text
     }
-
+    
     // When the user clicks, stop showing the text selection menu
     document.onpointerdown = (event) => {
         // Don't make the text selection menu disappear if the user clicked it; only if the user clicked elsewhere
         if (!textSelectionMenu.contains(event.target)) textSelectionMenu.style.visibility = "hidden"
     }
-
+    
     translateSelectedText.onclick = async () => {
         const text = getInterlinearViewSelectedText()
-        alert(await electronAPI.translate(langSourceSelect.value, "en", text))
+        alert(await electronAPI.translate(langSource, "en", text))
     }
-
+    
     defineSelectedText.onclick = () => {
         const text = getInterlinearViewSelectedText()
-        electronAPI.openLink(`https://en.wiktionary.org/wiki/${text.toLowerCase()}#${langSourceSelect.options[langSourceSelect.selectedIndex].text}`)
+        electronAPI.openLink(`https://en.wiktionary.org/wiki/${text.toLowerCase()}#${appConstants.langCodes[langSource]}`)
     }
-
+    
     function makeWhitespaceElem (whitespace) {
         const elem = document.createElement("span")
         const innerHTML = whitespace.replace(/\n/g, "<br class='source-lang-whitespace' />")
@@ -93,7 +95,7 @@
         elem.className = "source-lang-whitespace"
         interlinearViewPara.appendChild(elem)
     }
-
+    
     function makeWordPairElem (original, translated) {
         // Create the span which holds both the source word (original) and target word (translated)
         const wordPairElem = document.createElement("span")
@@ -132,6 +134,10 @@
     
     PageViewController.addPageView("interlinear-view", new PageView("interlinear-view", (translatedText) => {
         
+        // on page load
+        
+        langSource = translatedText.source
+        
         // Loop through all words
         for (let i = 0; i < translatedText.original.length; i ++) {
             
@@ -143,6 +149,9 @@
             }
         }
     }, () => {
+        
+        // on page unload
+        
         interlinearViewPara.innerHTML = ""
     }))
 })()
